@@ -2,10 +2,8 @@ package com.designflash.demo.controllers;
 
 import com.designflash.demo.services.LocalTopicService;
 import com.designflash.demo.services.TextFileReaderService;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.apache.catalina.connector.Response;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/refresh")
@@ -22,8 +20,11 @@ public class RefreshController {
 
     @GetMapping
     @CrossOrigin(origins = "*")
-    public void refreshFiles() {
-        localTopicService.refreshTopics();
-        textFileReaderService.refreshQuestions();
+    public boolean refreshFiles() {
+        Thread.ofVirtual().start(()-> {
+            localTopicService.refreshTopics();
+            textFileReaderService.refreshQuestions();
+        });
+        return true;
     }
 }
