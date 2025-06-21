@@ -2,7 +2,7 @@
 FROM eclipse-temurin:21-jdk AS build
 
 # Install Maven 3.9.9
-ARG MAVEN_VERSION=3.9.9
+ARG MAVEN_VERSION=3.9.10
 ARG USER_HOME_DIR="/root"
 ARG BASE_URL=https://downloads.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries
 RUN apt-get update && apt-get install -y curl tar && \
