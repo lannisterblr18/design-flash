@@ -1,10 +1,11 @@
 let mode = 'topic'; // or 'question'
 let questionIndex = 0;
 let questions = [];
-
-const TOPIC_API = 'http://localhost:8080/topics/v1/random';
-const QUESTION_API = 'http://localhost:8080/questions';
-const TOPIC_LOCAL_API = 'http://localhost:8080/topics/v2/random';
+const host = 'https://design-flash-1.onrender.com';
+// const host = 'http://localhost:8080' // Base URL for API requests
+const TOPIC_API = host+'/topics/v1/random';
+const QUESTION_API = host+'/questions';
+const TOPIC_LOCAL_API = host+'/topics/v2/random';
  // New endpoint serving parsed Q&A list
 
 if (localStorage.getItem("dark-mode") === "true") {
