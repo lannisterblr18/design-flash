@@ -6,100 +6,143 @@
   <title>System Design Flashcards</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
+    :root {
+      --bg-color: #f8f9fa;
+      --text-color: #212529;
+      --card-bg: #ffffff;
+    }
+
+    body.dark-mode {
+      --bg-color: #121212;
+      --text-color: #f1f1f1;
+      --card-bg: #1e1e1e;
+    }
+
     body {
-      background-color: #f8f9fa;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      transition: background-color 0.3s, color 0.3s;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, sans-serif;
     }
-    .card {
-      max-width: 600px;
-      width: 100%;
+
+    .card, #question-mode {
+      background-color: var(--card-bg);
+      color: var(--text-color);
+      transition: background-color 0.3s, color 0.3s;
     }
+
+    .toggle-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      z-index: 1000;
+    }
+
     pre {
       white-space: pre-wrap;
       word-wrap: break-word;
     }
+
     #question-mode {
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #fff;
       z-index: 999;
-      padding: 3rem;
+      padding: 1.5rem;
       overflow-y: auto;
+      touch-action: pan-y;
     }
-     :root {
-    --bg-color: #f8f9fa;
-    --text-color: #212529;
-    --card-bg: #ffffff;
-  }
 
-  body.dark-mode {
-    --bg-color: #121212;
-    --text-color: #f1f1f1;
-    --card-bg: #1e1e1e;
-  }
+    @media (max-width: 576px) {
+      .card {
+        margin: 1rem;
+        padding: 1rem !important;
+      }
 
-  body {
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    transition: background-color 0.3s, color 0.3s;
-  }
+      .btn {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.6rem;
+      }
 
-  .card, #question-mode {
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    transition: background-color 0.3s, color 0.3s;
-  }
+      #question-mode h2 {
+        font-size: 1.25rem;
+      }
 
-  pre {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-  }
-
-  #question-mode {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    z-index: 999;
-    padding: 3rem;
-    overflow-y: auto;
-  }
-
-  .toggle-btn {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-  }
+      #question-mode p {
+        font-size: 1rem;
+      }
+    }
   </style>
 </head>
-<body class="d-flex justify-content-center align-items-center vh-100">
+<body class="d-flex justify-content-center align-items-center min-vh-100 flex-column">
 
+<button class="btn btn-sm btn-outline-secondary toggle-btn" onclick="toggleDarkMode()">🌙</button>
+
+<!-- Normal Topic Card -->
+<div class="card p-4 shadow w-100" style="max-width: 600px;" id="topic-card">
+  <h5 class="card-title text-center" id="topic-title">System Design Topic</h5>
+  <pre class="card-text mt-3" id="topic-description">Click "Next" to start learning.</pre>
+
+  <div class="d-flex flex-column flex-sm-row justify-content-around mt-4 gap-2">
+    <button class="btn btn-secondary" id="question-btn">Question Mode</button>
+    <button class="btn btn-primary" id="next-btn">Next Online Topic</button>
+    <button class="btn btn-info" onclick="switchToLocalRandomTopic()">Next Local Topic</button>
+  </div>
+</div>
+
+<!-- Full Page Question Mode -->
+<div id="question-mode" class="container-fluid">
   <button class="btn btn-sm btn-outline-secondary toggle-btn" onclick="toggleDarkMode()">🌙</button>
-  <!-- Normal Topic Card -->
-  <div class="card p-4 shadow" id="topic-card">
-    <h5 class="card-title text-center" id="topic-title">System Design Topic</h5>
-    <pre class="card-text mt-3" id="topic-description">Click "Next" to start learning.</pre>
+  <h2 id="question-title">Question will appear here</h2>
+  <p id="question-answer" class="mt-4"></p>
 
-    
-    <div class="d-flex justify-content-around mt-4">
-      <button class="btn btn-secondary" id="question-btn">Question Mode</button>
-      <button class="btn btn-primary" id="next-btn">Next Online Topic</button>
-      <button class="btn btn-info" onclick="switchToLocalRandomTopic()">Next Local Topic</button>
-    </div>
+  <div class="d-flex flex-column flex-sm-row justify-content-between mt-5 gap-2">
+    <button class="btn btn-outline-secondary" onclick="exitQuestionMode()">Back</button>
+    <button class="btn btn-success" onclick="loadNextQuestion()">Next Question</button>
   </div>
+</div>
 
-  <!-- Full Page Question Mode -->
-  <div id="question-mode" class="container-fluid">
-    <button class="btn btn-sm btn-outline-secondary toggle-btn" onclick="toggleDarkMode()">🌙</button>
-    <h2 id="question-title">Question will appear here</h2>
-    <p id="question-answer" class="mt-4"></p>
-    
-    <div class="d-flex justify-content-between mt-5">
-      <button class="btn btn-outline-secondary" onclick="exitQuestionMode()">Back</button>
-      <button class="btn btn-success" onclick="loadNextQuestion()">Next Question</button>
-      
-    </div>
-  </div>
+<script>
+  // Swipe gesture support
+  let startX, startY;
 
-  <script src="script.js"></script>
+  const questionMode = document.getElementById("question-mode");
+
+  questionMode.addEventListener("touchstart", (e) => {
+    if (e.touches.length === 1) {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+    }
+  });
+
+  questionMode.addEventListener("touchend", (e) => {
+    if (!startX || !startY) return;
+
+    const endX = e.changedTouches[0].clientX;
+    const endY = e.changedTouches[0].clientY;
+
+    const diffX = endX - startX;
+    const diffY = endY - startY;
+
+    if (Math.abs(diffX) > Math.abs(diffY)) {
+      if (diffX > 30) {
+        loadNextQuestion(); // Swipe right
+      } else if (diffX < -30) {
+        loadNextQuestion(); // Swipe left
+      }
+    } else {
+      if (diffY > 30) {
+        exitQuestionMode(); // Swipe down
+      }
+    }
+
+    startX = null;
+    startY = null;
+  });
+</script>
+
+<script src="script.js"></script>
 </body>
 </html>

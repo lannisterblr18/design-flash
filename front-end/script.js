@@ -1,10 +1,11 @@
 let mode = 'topic'; // or 'question'
 let questionIndex = 0;
 let questions = [];
-const host = 'https://design-flash-1.onrender.com';
-// const host = 'http://localhost:8080' // Base URL for API requests
+ const host = 'https://design-flash-1.onrender.com';
+//const host = 'http://localhost:8080' // Base URL for API requests
 const TOPIC_API = host+'/topics/v1/random';
 const QUESTION_API = host+'/questions';
+const QUESTION_RANDOM_API = host+'/questions/random';
 const TOPIC_LOCAL_API = host+'/topics/v2/random';
  // New endpoint serving parsed Q&A list
 
@@ -45,7 +46,7 @@ async function loadRandomTopic() {
 
 async function switchToQuestionMode() {
   try {
-    const response = await fetch(QUESTION_API);
+    const response = await fetch(QUESTION_RANDOM_API);
     questions = await response.json();
     questionIndex = 0;
     mode = 'question';
@@ -65,9 +66,9 @@ function showNextQuestion() {
     document.getElementById("question-title").textContent = "No Questions";
     document.getElementById("question-answer").textContent = "Question bank is empty.";
     return;
-  }
+  }``
 
-  const q = questions[questionIndex % questions.length];
+  const q = questions;
   document.getElementById("question-title").textContent = "Q: " + q.question;
   document.getElementById("question-answer").textContent = "A: " + q.answer;
   questionIndex++;
@@ -94,15 +95,13 @@ function exitQuestionMode() {
   mode = 'topic';
 }
 
-function loadNextQuestion() {
+async function loadNextQuestion() {
   // Replace with API fetch
-  const next = {
-    question: "Design a URL shortener",
-    answer: "Generate unique ID (Base62), map to full URL in DB, redirect using controller."
-  };
+  const response = await fetch(QUESTION_RANDOM_API);
+  questions = await response.json();
 
-  document.getElementById("question-title").innerText = next.question;
-  document.getElementById("question-answer").innerText = next.answer;
+  document.getElementById("question-title").innerText = questions.question;
+  document.getElementById("question-answer").innerText = questions.answer;
 }
 
 function toggleDarkMode() {
