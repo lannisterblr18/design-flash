@@ -15,12 +15,21 @@ import java.util.List;
 @RequestMapping("/questions")
 public class QAController {
 
-    @Autowired
-    TextFileReaderService qaService;
+    private final TextFileReaderService qaService;
+
+    public QAController(TextFileReaderService qaService) {
+        this.qaService = qaService;
+    }
 
     @GetMapping
     @CrossOrigin(origins = "*")
     public List<QAPair> getQuestions() throws IOException {
         return qaService.loadFromTxtFile();
+    }
+
+    @GetMapping("/random")
+    @CrossOrigin(origins = "*")
+    public QAPair getRandomQuestion() throws IOException {
+        return qaService.getRandomQA();
     }
 }

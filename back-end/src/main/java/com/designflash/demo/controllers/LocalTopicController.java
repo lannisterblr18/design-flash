@@ -15,10 +15,11 @@ import java.util.Random;
 public class LocalTopicController {
 
     private final LocalTopicService localTopicService;
-    private final Random random = new Random();
+    private final Random random;
 
     public LocalTopicController(LocalTopicService localTopicService) {
         this.localTopicService = localTopicService;
+        this.random = new Random();
     }
 
     @GetMapping
