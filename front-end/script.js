@@ -1,7 +1,7 @@
 let mode = 'topic'; // or 'question'
 let questionIndex = 0;
 let questions = [];
- const host = 'https://design-flash-1.onrender.com';
+ const host = 'http://16.171.23.9:8080';
 //const host = 'http://localhost:8080' // Base URL for API requests
 const TOPIC_API = host+'/topics/v1/random';
 const QUESTION_API = host+'/questions';
